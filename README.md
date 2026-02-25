@@ -27,3 +27,6 @@ The code implements a complete data processing pipeline for analyzing translatio
 - Required libraries:
   ```bash
   pip install pandas numpy
+## 📚 Corpus Data
+
+The raw corpus data used in this study is available in the [`corpora/`](./corpora) directory.
