@@ -1,57 +1,25 @@
 # Appendix Code: Corpus Linguistics & Diachronic Analysis Pipeline
 
-This repository contains the supplementary source code for the paper **"[现代汉语外来词音译与意译的动态消长
----保真度与统一性的权衡
-]"**.
+This repository contains the supplementary source code for the paper **"[现代汉语外来词音译与意译的动态消长---保真度与统一性的权衡]"**.
 
 The code implements a complete data processing pipeline for analyzing translation strategies and lexical variation across different regions and time periods. The workflow proceeds from raw corpus data to statistical metrics and change-point detection.
 
-## 📂 File Descriptions
+## 📂 File Descriptions (Aligned with Paper)
 
-The scripts are designed to be run sequentially. Each script reads from the output of the previous one.
-
-### 1. Data Conversion
 - **`ccl2ann.py`**
-  - **Function**: Converts raw CCL corpus text files (`.txt`) into structured annotation formats (`.json`, `.csv`).
-  - **Input**: Raw text files from the `GOGOGO` directory.
-  - **Output**: Annotated CSV/JSON files with metadata (region, year, domain, snippet).
-  - **Key Feature**: Automatically infers region (Mainland, Taiwan, HK) and time period from file paths.
+  - **Function**: 将非结构化的CCL语料库检索结果转化为包含`时间轴（Period/Year）`、`地域（Region）`、`来源语（Source）`及`译名策略（Strategy）`等维度的结构化数据集，为历时分布研究奠定数据基础（见论文第二节 研究技术路线）。
 
-### 2. Normalization & Alias Mapping
 - **`normalize_alias_plus.py`**
-  - **Function**: Cleans text data, normalizes punctuation/encoding, and maps variant forms (aliases) to a canonical form.
-  - **Input**: Output CSVs from `ccl2ann.py`.
-  - **Output**: 
-    - `*.normalized.csv`: Cleaned data with a `canonical` column.
-    - `*.alias_stats.csv`: Statistics on variant frequencies.
-  - **Key Feature**: Supports an optional `alias_map.csv` for manual mapping; robust encoding detection.
+  - **Function**: 解决外来词引入初期“同词异名”的问题（如“德律风”与“德律丰”），通过人工校准表与模糊匹配算法，将不同变体归并至统一概念节点，有效消除频率稀释，确保“统一性（U值）”计算的准确性（见论文第三章第一节）。
 
-### 3. Temporal Chunking & Change-Point Detection
-- **`timechunker_changepoint.py`**
-  - **Function**: Aggregates data into time buckets (e.g., 1901-1920) and calculates strategy shares (Phonetic, Semantic, Mixed). It also detects significant change-points in usage trends.
-  - **Input**: `*.normalized.csv` files.
-  - **Output**: 
-    - `strategy_share.csv`: Time-series data of strategy proportions.
-    - `timechunker_changepoint.json`: Detailed JSON including detected change-points for visualization.
-  - **Dependencies**: `pandas`, `numpy`.
-
-### 4. Unity & Consistency Metrics
 - **`unity_meter_plus.py`**
-  - **Function**: Calculates cross-regional and cross-temporal consistency metrics (e.g., Jaccard similarity, top-form dominance).
-  - **Input**: `*.normalized.csv` files.
-  - **Output**: 
-    - `unity_metrics.csv`: Dominance ratios and Wilson confidence intervals.
-    - `unity_pairs.csv`: Pairwise region similarity (Jaccard index).
-    - `unity_discord_top.csv`: Identification of divergent dominant forms across regions.
+  - **Function**: 本研究的核心量化逻辑实现。该脚本计算“统一性（Uniformity, U）”指标，即主导译名形式在全量形式中的频率占比 (`Dominance Ratio`)，用以表征译名的集中度与规范化收敛速率（见论文第三章第一节）。
 
-### 5. Case Tracking & Timeline Generation
+- **`timechunker_changepoint.py`**
+  - **Function**: 拒绝主观历史分期，引入变点检测（Changepoint Detection）算法，自动识别音译与意译比例发生显著转折的关键年份（如“德律风→电话”的转变节点），为外部社会因素对语言演化的干扰提供客观参照（见论文第三章第三节）。
+
 - **`case_tracker_from_metrics.py`**
-  - **Function**: Generates dominant form timelines and tracks switches/divergences over time based on the metrics.
-  - **Input**: `unity_metrics.csv` (from `unity_meter_plus.py`).
-  - **Output**: 
-    - `case_dominant_timeline.csv`: Timeline of dominant forms per region.
-    - `switches_by_region.csv`: Count and details of strategy switches.
-    - `divergences_by_period.csv`: Periods with high regional divergence.
+  - **Function**: 追踪典型词项（如telephone、coffee）在F-U坐标系中的完整生命轨迹，构建“时段—频率—策略”三位一体的追踪矩阵，支持对“德律风 vs 电话”、“麦克风 vs 扩音器”等个案的深度透视（见论文第四章第二节）。
 
 ## ⚙️ Requirements
 
